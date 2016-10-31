@@ -3,5 +3,13 @@
 
     <string name="app_name">VHTwitterClient</string>
     <string name="login_label">Connect With Twitter</string>
+    <string name="welcome_text">Welcome to Twitter</string>
+    <string name="below_welcome_text">Get real-time updates about what matters to you.</string>
+    <string name="login">Log in</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="compose_tweet">Compose new tweet</string>
+    <string name="character_limit">140</string>
+    <string name="submit_tweet">Tweet</string>
 </resources>

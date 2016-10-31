@@ -28,8 +28,14 @@ public class TwitterClient extends OAuthBaseClient {
 	public static final String REST_CONSUMER_SECRET = "Bq2SXymOwdX7JP3drAIx6NFzXoVF0WopLcxZDNy3681h1IAePn"; // Change this
 	public static final String REST_CALLBACK_URL = "oauth://vhsimpletweets"; // Change this (here and in manifest)
 
+	private long max_id = 0;
+
 	public TwitterClient(Context context) {
 		super(context, REST_API_CLASS, REST_URL, REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
+	}
+
+	public void setMaxID(long id) {
+		max_id = id;
 	}
 
 	// CHANGE THIS
@@ -59,10 +65,23 @@ public class TwitterClient extends OAuthBaseClient {
 		String apiUrl = getApiUrl("statuses/user_timeline.json");
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
-		params.put("since_id", 1);
+//		params.put("since_id", 1);
 		client.get(apiUrl, params, handler);
+	}
 
+	public void getAdditionalTimeline(AsyncHttpResponseHandler handler, int offset) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		RequestParams params = new RequestParams();
+		params.put("count", 25);
+		params.put("max_id", max_id);
+		client.get(apiUrl, params, handler);
 	}
 
 	// have another one for composing the tweet
+	public void submitTweet(AsyncHttpResponseHandler handler, String message) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		RequestParams params = new RequestParams();
+		params.put("status", message);
+		client.post(apiUrl, params, handler);
+	}
 }

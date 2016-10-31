@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/menu/menu.xml -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/birdicon"
+        android:orderInCategory="1"
+        app:showAsAction="always"
+        android:icon="@drawable/twitterbird"
+        android:title="Home"
+        />
+
+    <item
+        android:id="@+id/miActionProgress"
+        android:title="Loading..."
+        android:visible="false"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        app:actionLayout="@layout/progress_bar" />
+
+    <item
+        android:id="@+id/menu_compose"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:orderInCategory="6"
+        android:icon="@drawable/creation"
+        android:title="Compose"
+        />
+
+</menu>

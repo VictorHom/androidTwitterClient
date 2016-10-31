@@ -8,12 +8,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.models.Tweet;
-import com.squareup.picasso.Picasso;
+import com.codepath.apps.twitterclient.utils.Helper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by victorhom on 10/29/16.
@@ -23,6 +27,7 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
 
     Context mContext;
     ArrayList<Tweet> mTweets;
+    private long last_max_id;
 
     public TweetsArrayAdapter(Context context, ArrayList<Tweet> tweets) {
         this.mContext = context;
@@ -34,10 +39,23 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
         return mContext;
     }
 
+    public long getLastMaxId() {
+        return last_max_id;
+    }
+
     public void addAll(List<Tweet> tweets) {
         mTweets.addAll(tweets);
+        Tweet lastTweet = tweets.get(tweets.size() - 1);
+        last_max_id = lastTweet.getUid();
         notifyDataSetChanged();
     }
+
+    // Clean all elements of the recycler
+    public void clear() {
+        mTweets.clear();
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public TweetsArrayAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -60,11 +78,13 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
         TextView tweetUser = holder.tvProfileName;
         TextView tweetBody = holder.tvTweetBody;
         ImageView tweetProfilePicture = holder.ivProfile;
-
+        TextView tweetDate = holder.tvDate;
+        // Helper.getRelativeTimeAgo(tweet.getCreatedAt());
         tweetUser.setText(tweet.getUser().getScreenName());
         tweetBody.setText(tweet.getBody());
         tweetProfilePicture.setImageResource(android.R.color.transparent);
-        Picasso.with(mContext).load(tweet.getUser().getProfileImageUrl()).into(tweetProfilePicture);
+        Glide.with(mContext).load(tweet.getUser().getProfileImageUrl()).into(tweetProfilePicture);
+        tweetDate.setText(Helper.getRelativeTimeAgo(tweet.getCreatedAt()));
 
     }
 
@@ -76,16 +96,14 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<TweetsArrayAdapter.
 
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-        ImageView ivProfile;
-        TextView tvProfileName;
-        TextView tvTweetBody;
+        @BindView(R.id.ivProfile) ImageView ivProfile;
+        @BindView(R.id.tvProfileName) TextView tvProfileName;
+        @BindView(R.id.tvTweetBody) TextView tvTweetBody;
+        @BindView(R.id.tvDate) TextView tvDate;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
-            ivProfile = (ImageView) itemView.findViewById(R.id.ivProfile);
-            tvProfileName = (TextView) itemView.findViewById(R.id.tvProfileName);
-            tvTweetBody = (TextView) itemView.findViewById(R.id.tvTweetBody);
+            ButterKnife.bind(this, itemView);
         }
     }
 }
