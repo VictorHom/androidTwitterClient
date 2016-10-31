@@ -38,8 +38,14 @@ public class ViewHolder2 extends RecyclerView.ViewHolder{
         tvTweetBody.setText(data.getBody());
         ivProfile.setImageResource(android.R.color.transparent);
         Glide.with(m).load(data.getUser().getProfileImageUrl()).into(ivProfile);
-        tvDate.setText(Helper.getRelativeTimeAgo(data.getCreatedAt()));
-        Glide.with(m).load(data.getLinks().get(0)).into(mediaImage);
+        if (!data.getCreatedAt().equals(Tweet.NOW)) {
+            tvDate.setText(Helper.getRelativeTimeAgo(data.getCreatedAt()));
+        } else {
+            // show just now!
+            tvDate.setText(data.getCreatedAt());
+        }
+
+        Glide.with(m).load(data.getMediaUrl()).fitCenter().into(mediaImage);
     }
 
 }

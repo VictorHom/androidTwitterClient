@@ -43,12 +43,12 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     //Returns the view type of the item at position for the purposes of view recycling.
     @Override
     public int getItemViewType(int position) {
-        if (mTweets.get(position).getLinks().size() == 0) {
+        if (mTweets.get(position).getMediaUrl().length() == 0) {
             return NO_IMAGE;
         } else if (mTweets.get(position).getLinks().size() > 0) {
             return IMAGE;
         }
-        return -1;
+        return 1;
     }
 
     // this is to handle loading additional post for tweitter as you scroll down the page
@@ -60,6 +60,12 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         mTweets.addAll(tweets);
         Tweet lastTweet = tweets.get(tweets.size() - 1);
         last_max_id = lastTweet.getUid();
+        notifyDataSetChanged();
+    }
+
+    public void addStandalonePost(String message) {
+        // passing the last text in current list for reference to username
+        mTweets.add(0, new Tweet(message, mTweets.get(mTweets.size() -1 )));
         notifyDataSetChanged();
     }
 
@@ -112,37 +118,4 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
     }
 
-//    @Override
-//    public void onBindViewHolder(TweetsArrayAdapter.ViewHolder holder, int position) {
-//
-//        Tweet tweet = mTweets.get(position);
-//
-//        TextView tweetUser = holder.tvProfileName;
-//        TextView tweetBody = holder.tvTweetBody;
-//        ImageView tweetProfilePicture = holder.ivProfile;
-//        TextView tweetDate = holder.tvDate;
-//        // Helper.getRelativeTimeAgo(tweet.getCreatedAt());
-//        tweetUser.setText(tweet.getUser().getScreenName());
-//        tweetBody.setText(tweet.getBody());
-//        tweetProfilePicture.setImageResource(android.R.color.transparent);
-//        Glide.with(mContext).load(tweet.getUser().getProfileImageUrl()).into(tweetProfilePicture);
-//        tweetDate.setText(Helper.getRelativeTimeAgo(tweet.getCreatedAt()));
-//
-//    }
-
-
-
-
-
-//    public class ViewHolder extends RecyclerView.ViewHolder{
-//        @BindView(R.id.ivProfile) ImageView ivProfile;
-//        @BindView(R.id.tvProfileName) TextView tvProfileName;
-//        @BindView(R.id.tvTweetBody) TextView tvTweetBody;
-//        @BindView(R.id.tvDate) TextView tvDate;
-//
-//        public ViewHolder(View itemView) {
-//            super(itemView);
-//            ButterKnife.bind(this, itemView);
-//        }
-//    }
 }

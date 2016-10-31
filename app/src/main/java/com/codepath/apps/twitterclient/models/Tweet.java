@@ -115,11 +115,29 @@ import java.util.regex.Pattern;
  */
 // parse json and store store, encapsulate state logic or display logic
 public class Tweet {
+    public final static String NOW = "just now";
     private String body;
     private long uid; // unique id for the tweet
     private User user;
     private String createdAt;
     private ArrayList<String> links = new ArrayList<>();
+
+    public Tweet(String message, Tweet lastTweet) {
+        this.body = message;
+        this.createdAt = NOW;
+        this.mediaUrl = "";
+        this.uid = lastTweet.getUid();
+        this.user = lastTweet.getUser();
+        this.links = new ArrayList<>();
+    }
+
+    public Tweet() {
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
     private String mediaUrl = "";
 
     // Pattern for gathering http:// links from the Text
@@ -170,16 +188,22 @@ public class Tweet {
         return tweet;
     }
 
+
     private static String getMediaUrl(JSONObject j) {
         try {
             if (!j.getBoolean("retweeted")) {
                 JSONObject entities = j.getJSONObject("entities");
                 JSONArray mediaEntries = entities.getJSONArray("media");
                 JSONObject media =  (JSONObject) mediaEntries.get(0);
-                return media.getString("media_url_https");
+                if (media.getString("media_url_https").indexOf(".png") > -1 || media.getString("media_url_https").indexOf(".jpg") > -1) {
+                    return media.getString("media_url_https");
+                } else {
+                    return "";
+                }
+
             }
         } catch (JSONException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             return "";
         }
         return "";
