@@ -148,7 +148,6 @@ public class ComposeTweetFragment extends DialogFragment {
             client.submitTweet(new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                    super.onSuccess(statusCode, headers, response);
                     closeFragment();
                 }
 
@@ -165,7 +164,7 @@ public class ComposeTweetFragment extends DialogFragment {
 
     private void closeFragment() {
         //getActivity().getFragmentManager().beginTransaction().remove(ComposeTweetFragment.this).commit();
-        passData(true);
+        passData(true, etTweetBox.getText().toString());
         getActivity().getSupportFragmentManager().beginTransaction().remove(ComposeTweetFragment.this).commit();
         //getDialog().dismiss();
 
@@ -197,12 +196,12 @@ public class ComposeTweetFragment extends DialogFragment {
     }
 
     public interface OnDataPass {
-        public void getUpdate(boolean compose);
+        public void getUpdate(boolean compose, String message);
     }
 
-    public void passData(boolean compose) {
+    public void passData(boolean compose, String message) {
         if (dataPasser != null) {
-            dataPasser.getUpdate(compose);
+            dataPasser.getUpdate(compose, message);
         }
     }
 }

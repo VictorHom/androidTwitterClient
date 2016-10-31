@@ -186,8 +186,12 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
 
 
     @Override
-    public void getUpdate(boolean compose) {
-        aTweets.clear();
-        populateTimeline();
+    public void getUpdate(boolean compose, String message) {
+//        aTweets.clear();
+//        populateTimeline();
+        // make the date be 'just now'
+        // take the profile picture from the first tweet
+        // not pictures
+        aTweets.addStandalonePost(message);
     }
 }

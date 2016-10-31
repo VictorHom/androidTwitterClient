@@ -9,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  {
@@ -113,11 +115,41 @@ import java.util.ArrayList;
  */
 // parse json and store store, encapsulate state logic or display logic
 public class Tweet {
+    public final static String NOW = "just now";
     private String body;
     private long uid; // unique id for the tweet
     private User user;
     private String createdAt;
-    // list out attributes
+    private ArrayList<String> links = new ArrayList<>();
+
+    public Tweet(String message, Tweet lastTweet) {
+        this.body = message;
+        this.createdAt = NOW;
+        this.mediaUrl = "";
+        this.uid = lastTweet.getUid();
+        this.user = lastTweet.getUser();
+        this.links = new ArrayList<>();
+    }
+
+    public Tweet() {
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    private String mediaUrl = "";
+
+    // Pattern for gathering http:// links from the Text
+    private static final Pattern urlPattern = Pattern.compile(
+            "(?:^|[\\W])((ht|f)tp(s?):\\/\\/|www\\.)"
+                    + "(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*"
+                    + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);
+
+    public ArrayList<String> getLinks() {
+        return links;
+    }
 
     public String getBody() {
         return body;
@@ -147,11 +179,47 @@ public class Tweet {
             tweet.uid = jsonObject.getLong("id");
             tweet.createdAt = jsonObject.getString("created_at");
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
+            tweet.links = gatherLinks(tweet.body);
+            tweet.mediaUrl = getMediaUrl(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return tweet;
+    }
+
+
+    private static String getMediaUrl(JSONObject j) {
+        try {
+            if (!j.getBoolean("retweeted")) {
+                JSONObject entities = j.getJSONObject("entities");
+                JSONArray mediaEntries = entities.getJSONArray("media");
+                JSONObject media =  (JSONObject) mediaEntries.get(0);
+                if (media.getString("media_url_https").indexOf(".png") > -1 || media.getString("media_url_https").indexOf(".jpg") > -1) {
+                    return media.getString("media_url_https");
+                } else {
+                    return "";
+                }
+
+            }
+        } catch (JSONException e) {
+//            e.printStackTrace();
+            return "";
+        }
+        return "";
+    }
+
+    private static ArrayList<String> gatherLinks(String body) {
+        ArrayList<String> foundLinks = new ArrayList<>();
+        // Matcher matching the pattern
+        Matcher m = urlPattern.matcher(body);
+
+        while (m.find()) {
+            int start = m.start();
+            int end = m.end();
+            foundLinks.add((String) body.subSequence(start, end));
+        }
+        return foundLinks;
     }
 
     public static ArrayList<Tweet> fromJSONArray(JSONArray jsonArray) {
@@ -167,7 +235,5 @@ public class Tweet {
         }
         return a;
     }
-
-
 
 }
