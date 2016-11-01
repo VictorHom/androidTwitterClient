@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +42,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     @BindView(R.id.include) Toolbar menubar;
     MenuItem miActionProgressItem;;
+    @BindView(R.id.fabicon) android.support.design.widget.FloatingActionButton fabicon;
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
@@ -127,6 +127,16 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                     }
                 }
         );
+
+        fabicon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                FragmentManager fm = getSupportFragmentManager();
+                ComposeTweetFragment fa = ComposeTweetFragment.newInstance();
+                fa.setArguments(bundle);
+                fa.show(getSupportFragmentManager(),"compose");
+            }
+        });
     }
 
 
@@ -144,7 +154,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 // need to handler failures
-                Log.d("DEBUG", errorResponse.toString());
+//                Log.d("DEBUG", errorResponse.toString());
             }
         });
     }
@@ -163,7 +173,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 // need to handler failures
-                Log.d("DEBUG", errorResponse.toString());
+//                Log.d("DEBUG", errorResponse.toString());
             }
         }, page);
 
