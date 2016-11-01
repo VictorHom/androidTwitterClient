@@ -34,6 +34,7 @@ import cz.msebera.android.httpclient.Header;
 
 public class TimelineActivity extends AppCompatActivity implements ComposeTweetFragment.OnDataPass{
 
+    private static final float TOOLBAR_ELEVATION = 200.0f;
     private TwitterClient client;
     private ArrayList<Tweet> tweets;
     private TweetsArrayAdapter aTweets;
@@ -103,16 +104,16 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
 
         rvTweets.addOnScrollListener(scrollListener);
 
-        // create the array list (data source);
-        // construct the adapter from the data source
-        // connect adapter to the list view
-
         client = TwitterApplication.getRestClient(); //singleton client
 
         populateTimeline();
         swipeRefresh();
+        setRVClicks();
+        setFabiconListener();
 
+    }
 
+    private void setRVClicks() {
         ItemClickSupport.addTo(rvTweets).setOnItemClickListener(
                 new ItemClickSupport.OnItemClickListener() {
                     @Override
@@ -127,7 +128,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
                     }
                 }
         );
+    }
 
+    private void setFabiconListener(){
         fabicon.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
@@ -138,6 +141,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             }
         });
     }
+
 
 
     // send api request
