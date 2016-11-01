@@ -1,5 +1,6 @@
 package com.codepath.apps.twitterclient.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
@@ -8,9 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ProgressBar;
 
 import com.codepath.apps.twitterclient.R;
@@ -20,6 +21,7 @@ import com.codepath.apps.twitterclient.fragments.ComposeTweetFragment;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
 import com.codepath.apps.twitterclient.utils.EndlessRecyclerViewScrollListener;
+import com.codepath.apps.twitterclient.utils.ItemClickSupport;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -40,6 +42,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     @BindView(R.id.swipeContainer) SwipeRefreshLayout swipeContainer;
     @BindView(R.id.include) Toolbar menubar;
     MenuItem miActionProgressItem;;
+    @BindView(R.id.fabicon) android.support.design.widget.FloatingActionButton fabicon;
 
     private EndlessRecyclerViewScrollListener scrollListener;
 
@@ -108,6 +111,32 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
 
         populateTimeline();
         swipeRefresh();
+
+
+        ItemClickSupport.addTo(rvTweets).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        // do it
+                        Tweet t = tweets.get(position);
+                        // somewhere inside an Activity
+                        Intent i = new Intent(TimelineActivity.this, TweetDetailActivity.class);
+                        i.putExtra("myData", t); // using the (String name, Parcelable value) overload!
+                        startActivity(i); // dataToSend is now passed to the new Activity
+
+                    }
+                }
+        );
+
+        fabicon.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                FragmentManager fm = getSupportFragmentManager();
+                ComposeTweetFragment fa = ComposeTweetFragment.newInstance();
+                fa.setArguments(bundle);
+                fa.show(getSupportFragmentManager(),"compose");
+            }
+        });
     }
 
 
@@ -125,7 +154,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 // need to handler failures
-                Log.d("DEBUG", errorResponse.toString());
+//                Log.d("DEBUG", errorResponse.toString());
             }
         });
     }
@@ -144,7 +173,7 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 // need to handler failures
-                Log.d("DEBUG", errorResponse.toString());
+//                Log.d("DEBUG", errorResponse.toString());
             }
         }, page);
 
@@ -193,5 +222,6 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         // take the profile picture from the first tweet
         // not pictures
         aTweets.addStandalonePost(message);
+        rvTweets.getLayoutManager().scrollToPosition(0);
     }
 }

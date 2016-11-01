@@ -22,6 +22,8 @@ public class ViewHolder1 extends RecyclerView.ViewHolder{
     @BindView(R.id.tvProfileName) TextView tvProfileName;
     @BindView(R.id.tvTweetBody) TextView tvTweetBody;
     @BindView(R.id.tvDate) TextView tvDate;
+    Tweet t;
+    Context c;
 
     public ViewHolder1(View itemView) {
         super(itemView);
@@ -29,6 +31,8 @@ public class ViewHolder1 extends RecyclerView.ViewHolder{
     }
 
     public void setData(Tweet data, Context m) {
+        t = data;
+        c = m;
         tvProfileName.setText(data.getUser().getScreenName());
         tvTweetBody.setText(data.getBody());
         ivProfile.setImageResource(android.R.color.transparent);
@@ -40,4 +44,5 @@ public class ViewHolder1 extends RecyclerView.ViewHolder{
             tvDate.setText(data.getCreatedAt());
         }
     }
+
 }

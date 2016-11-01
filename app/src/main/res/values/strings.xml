@@ -12,4 +12,8 @@
     <string name="compose_tweet">Compose new tweet</string>
     <string name="character_limit">140</string>
     <string name="submit_tweet">Tweet</string>
+    <string name="title_activity_tweet_detail">TweetDetailActivity</string>
+    <string name="retweet">retweet</string>
+    <string name="like">like</string>
+    <string name="reply">reply</string>
 </resources>

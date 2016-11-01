@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    android:id="@+id/main_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".activities.TimelineActivity"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <include
         layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/include" />
+
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -30,4 +39,20 @@
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:src="@drawable/shape_circle_plus"
+        android:id="@+id/fabicon"
+        app:fabSize="normal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        app:layout_behavior="com.codepath.floatingactionbuttontest.ScrollAwareFABBehavior"/>
+    <!--app:layout_anchorGravity="bottom|right|end"-->
+
+
+
 </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>

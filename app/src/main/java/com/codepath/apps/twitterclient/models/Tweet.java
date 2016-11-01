@@ -4,6 +4,9 @@ package com.codepath.apps.twitterclient.models;
  * Created by victorhom on 10/29/16.
  */
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -114,13 +117,29 @@ import java.util.regex.Pattern;
  }
  */
 // parse json and store store, encapsulate state logic or display logic
-public class Tweet {
+public class Tweet implements Parcelable {
     public final static String NOW = "just now";
     private String body;
     private long uid; // unique id for the tweet
     private User user;
     private String createdAt;
     private ArrayList<String> links = new ArrayList<>();
+    private boolean retweet;
+
+    public boolean isRetweet() {
+        return retweet;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public int getRetweetNumber() {
+        return retweetNumber;
+    }
+
+    private int likes;
+    private int retweetNumber;
 
     public Tweet(String message, Tweet lastTweet) {
         this.body = message;
@@ -181,6 +200,9 @@ public class Tweet {
             tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
             tweet.links = gatherLinks(tweet.body);
             tweet.mediaUrl = getMediaUrl(jsonObject);
+            tweet.likes = jsonObject.getInt("favorite_count");
+            tweet.retweet = jsonObject.getBoolean("retweeted");
+            tweet.retweetNumber = jsonObject.getInt("retweet_count");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -236,4 +258,39 @@ public class Tweet {
         return a;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.body);
+        dest.writeLong(this.uid);
+        dest.writeParcelable(this.user, flags);
+        dest.writeString(this.createdAt);
+        dest.writeStringList(this.links);
+        dest.writeString(this.mediaUrl);
+    }
+
+    protected Tweet(Parcel in) {
+        this.body = in.readString();
+        this.uid = in.readLong();
+        this.user = in.readParcelable(User.class.getClassLoader());
+        this.createdAt = in.readString();
+        this.links = in.createStringArrayList();
+        this.mediaUrl = in.readString();
+    }
+
+    public static final Parcelable.Creator<Tweet> CREATOR = new Parcelable.Creator<Tweet>() {
+        @Override
+        public Tweet createFromParcel(Parcel source) {
+            return new Tweet(source);
+        }
+
+        @Override
+        public Tweet[] newArray(int size) {
+            return new Tweet[size];
+        }
+    };
 }
