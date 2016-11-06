@@ -1,5 +1,6 @@
 package com.codepath.apps.twitterclient.fragments;
 
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,10 +18,12 @@ import android.widget.ProgressBar;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.TwitterApplication;
+import com.codepath.apps.twitterclient.activities.TweetDetailActivity;
 import com.codepath.apps.twitterclient.adapters.TweetsArrayAdapter;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
 import com.codepath.apps.twitterclient.utils.EndlessRecyclerViewScrollListener;
+import com.codepath.apps.twitterclient.utils.ItemClickSupport;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -125,7 +128,7 @@ public class TimelineFragment extends Fragment {
 
         populateTimeline();
         swipeRefresh();
-        //setRVClicks();
+        setRVClicks();
         setFabiconListener();
     }
 
@@ -259,6 +262,23 @@ public class TimelineFragment extends Fragment {
 //                Log.d("DEBUG", errorResponse.toString());
             }
         }, page);
+    }
+
+    private void setRVClicks() {
+        ItemClickSupport.addTo(rvTweets).setOnItemClickListener(
+                new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        // do it
+                        Tweet t = tweets.get(position);
+                        // somewhere inside an Activity
+                        Intent i = new Intent(getActivity(), TweetDetailActivity.class);
+                        i.putExtra("myData", t); // using the (String name, Parcelable value) overload!
+                        startActivity(i); // dataToSend is now passed to the new Activity
+
+                    }
+                }
+        );
     }
 
     private void setFabiconListener(){
