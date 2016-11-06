@@ -1,0 +1,112 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.codepath.apps.twitterclient.fragments.ProfileFragment">
+
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
+
+        <ImageView
+            android:layout_width="fill_parent"
+            android:layout_height="100dp"
+            tools:layout_width="match_parent"
+            tools:layout_height="100dp"
+            android:id="@+id/ivBackground"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="0dp"
+            android:padding="0dp"
+            android:paddingBottom="10dp"
+            android:adjustViewBounds="true"/>
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/ivProfile"
+            tools:layout_width="50dp"
+            tools:layout_height="50dp"
+            tools:src="@drawable/account"
+            android:layout_alignBottom="@+id/ivBackground"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/tvName"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:paddingLeft="20dp"
+            android:layout_below="@+id/ivBackground"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/tvTwitterHandle"
+            android:textColor="@color/separatorblue"
+            android:layout_below="@+id/tvName"
+            android:layout_alignLeft="@+id/tvName"
+            android:layout_alignStart="@+id/tvName"
+            android:paddingLeft="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:id="@+id/tvBlurb"
+            android:layout_below="@+id/tvTwitterHandle"
+            android:layout_alignLeft="@+id/tvTwitterHandle"
+            android:layout_alignStart="@+id/tvTwitterHandle"
+            android:paddingLeft="20dp"
+            android:layout_marginBottom="15dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="100"
+            android:id="@+id/tvFollowerNumber"
+            android:paddingLeft="20dp"
+            android:layout_above="@+id/tvFollowingNumber"
+            android:layout_centerHorizontal="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/followers"
+            android:id="@+id/tvFollowerText"
+            android:paddingLeft="20dp"
+            android:layout_alignTop="@+id/tvFollowerNumber"
+            android:layout_toRightOf="@+id/tvFollowingNumber"
+            android:layout_toEndOf="@+id/tvFollowingNumber" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1234"
+            android:id="@+id/tvFollowingNumber"
+            android:layout_alignTop="@+id/tvTwitterHandle"
+            android:layout_alignLeft="@+id/tvFollowerNumber"
+            android:layout_alignStart="@+id/tvFollowerNumber"
+            android:paddingLeft="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/following"
+            android:id="@+id/tvFollowingText"
+            android:layout_alignTop="@+id/tvFollowingNumber"
+            android:layout_toRightOf="@+id/tvFollowingNumber"
+            android:layout_toEndOf="@+id/tvFollowingNumber"
+            android:paddingLeft="20dp"
+            />
+    </RelativeLayout>
+
+</FrameLayout>

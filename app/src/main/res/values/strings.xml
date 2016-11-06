@@ -16,4 +16,6 @@
     <string name="retweet">retweet</string>
     <string name="like">like</string>
     <string name="reply">reply</string>
+    <string name="followers">followers</string>
+    <string name="following">following</string>
 </resources>
