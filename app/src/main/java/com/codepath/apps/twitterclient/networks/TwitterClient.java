@@ -69,14 +69,15 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, params, handler);
 	}
 
-	public void getAdditionalTimeline(AsyncHttpResponseHandler handler, int offset) {
+	public void getAdditionalTimeline(AsyncHttpResponseHandler handler, long last_id) {
 		String apiUrl = getApiUrl("statuses/user_timeline.json");
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
-		params.put("max_id", max_id - 1);
+		params.put("max_id", last_id - 1);
 		client.get(apiUrl, params, handler);
 	}
 
+	// when this is called, the max_id should be reset;
 	public void getHomeTimelineUser(AsyncHttpResponseHandler handler, Long twitterId) {
 		String apiUrl = getApiUrl("statuses/user_timeline.json");
 		RequestParams params = new RequestParams();
@@ -85,12 +86,12 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, params, handler);
 	}
 
-	public void getAdditionalTimelineUser(AsyncHttpResponseHandler handler, int offset, Long twitterId) {
+	public void getAdditionalTimelineUser(AsyncHttpResponseHandler handler, long last_id, Long twitterId) {
 		String apiUrl = getApiUrl("statuses/user_timeline.json");
 		RequestParams params = new RequestParams();
 		params.put("user_id", twitterId);
 		params.put("count", 25);
-		params.put("max_id", max_id - 1);
+		params.put("max_id", last_id - 1);
 		client.get(apiUrl, params, handler);
 	}
 
@@ -121,11 +122,11 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, params, handler);
 	}
 
-	public void getAdditionalMentionsTimeline(AsyncHttpResponseHandler handler, int offset) {
+	public void getAdditionalMentionsTimeline(AsyncHttpResponseHandler handler, long last_id) {
 		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
-		params.put("max_id", max_id - 1);
+		params.put("max_id", last_id - 1);
 		client.get(apiUrl, params, handler);
 	}
 

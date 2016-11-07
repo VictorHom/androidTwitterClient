@@ -63,6 +63,7 @@ public class TimelineFragment extends Fragment {
     private static final int DEFAULT_USER_ID = -1;
     private int tabPage;
     private long userId;
+    private long previous_max_id;
 
     public static Fragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -152,6 +153,7 @@ public class TimelineFragment extends Fragment {
                 public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                     aTweets.addAll(Tweet.fromJSONArray(response));
                     client.setMaxID(aTweets.getLastMaxId());
+                    previous_max_id = aTweets.getLastMaxId();
                     swipeContainer.setRefreshing(false);
                 }
 
@@ -167,6 +169,7 @@ public class TimelineFragment extends Fragment {
                 public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                     aTweets.addAll(Tweet.fromJSONArray(response));
                     client.setMaxID(aTweets.getLastMaxId());
+                    previous_max_id = aTweets.getLastMaxId();
                     swipeContainer.setRefreshing(false);
                 }
 
@@ -186,6 +189,7 @@ public class TimelineFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 aTweets.addAll(Tweet.fromJSONArray(response));
                 client.setMaxID(aTweets.getLastMaxId());
+                previous_max_id = aTweets.getLastMaxId();
                 swipeContainer.setRefreshing(false);
             }
 
@@ -215,6 +219,7 @@ public class TimelineFragment extends Fragment {
                 public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                     aTweets.addAll(Tweet.fromJSONArray(response));
                     client.setMaxID(aTweets.getLastMaxId());
+                    previous_max_id = aTweets.getLastMaxId();
                     hideProgressBar();
                     swipeContainer.setRefreshing(false);
                 }
@@ -224,13 +229,14 @@ public class TimelineFragment extends Fragment {
                     // need to handler failures
 //                Log.d("DEBUG", errorResponse.toString());
                 }
-            }, page, userId);
+            }, previous_max_id, userId);
         } else {
             client.getAdditionalTimeline(new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                     aTweets.addAll(Tweet.fromJSONArray(response));
                     client.setMaxID(aTweets.getLastMaxId());
+                    previous_max_id = aTweets.getLastMaxId();
                     hideProgressBar();
                     swipeContainer.setRefreshing(false);
                 }
@@ -240,7 +246,7 @@ public class TimelineFragment extends Fragment {
                     // need to handler failures
 //                Log.d("DEBUG", errorResponse.toString());
                 }
-            }, page);
+            }, previous_max_id);
         }
     }
 
@@ -250,6 +256,7 @@ public class TimelineFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 aTweets.addAll(Tweet.fromJSONArray(response));
                 client.setMaxID(aTweets.getLastMaxId());
+                previous_max_id = aTweets.getLastMaxId();
                 hideProgressBar();
                 swipeContainer.setRefreshing(false);
             }
@@ -259,7 +266,7 @@ public class TimelineFragment extends Fragment {
                 // need to handler failures
 //                Log.d("DEBUG", errorResponse.toString());
             }
-        }, page);
+        }, previous_max_id);
     }
 
     private void setRVClicks() {
@@ -301,6 +308,7 @@ public class TimelineFragment extends Fragment {
             public void onRefresh() {
                 aTweets.clear();
                 populateTimeline();
+                previous_max_id = 1;
             }
         });
         // Configure the refreshing colors
@@ -326,28 +334,5 @@ public class TimelineFragment extends Fragment {
         rvTweets.getLayoutManager().scrollToPosition(0);
     }
 
-//    @OnClick(R.id.fabicon)
-//    public void onClickComposeDialog(View view) {
-//        System.out.println("fabicon is clicked");
-//    }
-
-
-    // need to apply this to click on image
-//    private JsonHttpResponseHandler HandleVerification() {
-//        return new JsonHttpResponseHandler() {
-//            @Override
-//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-//                User user = User.fromJson(response);
-//                Intent intent = new Intent(getActivity(), ProfileActivity.class);
-//                intent.putExtra(User.USER, user);
-//                startActivity(intent);
-//            }
-//
-//            @Override
-//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-////                super.onFailure(statusCode, headers, throwable, errorResponse);
-//            }
-//        };
-//    }
 
 }
