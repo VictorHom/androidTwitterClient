@@ -32,7 +32,6 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import butterknife.Unbinder;
 import cz.msebera.android.httpclient.Header;
 
@@ -243,7 +242,6 @@ public class TimelineFragment extends Fragment {
                 }
             }, page);
         }
-
     }
 
     private void getAdditionalMentionsTimeline(int page) {
@@ -328,9 +326,28 @@ public class TimelineFragment extends Fragment {
         rvTweets.getLayoutManager().scrollToPosition(0);
     }
 
-    @OnClick(R.id.fabicon)
-    public void onClickComposeDialog(View view) {
-        System.out.println("fabicon is clicked");
-    }
+//    @OnClick(R.id.fabicon)
+//    public void onClickComposeDialog(View view) {
+//        System.out.println("fabicon is clicked");
+//    }
+
+
+    // need to apply this to click on image
+//    private JsonHttpResponseHandler HandleVerification() {
+//        return new JsonHttpResponseHandler() {
+//            @Override
+//            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+//                User user = User.fromJson(response);
+//                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+//                intent.putExtra(User.USER, user);
+//                startActivity(intent);
+//            }
+//
+//            @Override
+//            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+////                super.onFailure(statusCode, headers, throwable, errorResponse);
+//            }
+//        };
+//    }
 
 }

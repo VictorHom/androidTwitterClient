@@ -60,10 +60,11 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             showComposeDialog();
             return true;
         } else if(id == R.id.menu_profile) {
-            Log.d("DEBUG", "in menu click from main timeline");
             client.getVerifyCredentials(HandleVerification());
-
-
+            return true;
+        }else if (id == R.id.birdicon) {
+            Intent intent = new Intent(getApplication(), TimelineActivity.class);
+            startActivity(intent);
             return true;
         } else {
             return super.onOptionsItemSelected(item);

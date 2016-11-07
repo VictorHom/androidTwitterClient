@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.TwitterApplication;
@@ -17,9 +16,13 @@ import com.codepath.apps.twitterclient.fragments.ProfileFragment;
 import com.codepath.apps.twitterclient.fragments.TimelineFragment;
 import com.codepath.apps.twitterclient.models.User;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONObject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 
 public class ProfileActivity extends AppCompatActivity implements ComposeTweetFragment.OnDataPass{
 
@@ -50,12 +53,36 @@ public class ProfileActivity extends AppCompatActivity implements ComposeTweetFr
             showComposeDialog();
             return true;
         } else if(id == R.id.menu_profile) {
+            // go to your home profile
+            client.getVerifyCredentials(HandleVerification());
             // unless it's someone elses
-            Toast.makeText(this, "You're already on a profile",Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, "You're already on a profile",Toast.LENGTH_LONG).show();
+            return true;
+        } else if (id == R.id.birdicon) {
+            Intent intent = new Intent(getApplication(), TimelineActivity.class);
+            intent.putExtra(User.USER, user);
+            startActivity(intent);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
+    }
+
+    private JsonHttpResponseHandler HandleVerification() {
+        return new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                User user = User.fromJson(response);
+                Intent intent = new Intent(getApplication(), ProfileActivity.class);
+                intent.putExtra(User.USER, user);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+//                super.onFailure(statusCode, headers, throwable, errorResponse);
+            }
+        };
     }
 
     @Override
