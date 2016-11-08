@@ -15,6 +15,7 @@ import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.TwitterApplication;
 import com.codepath.apps.twitterclient.models.User;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
+import com.codepath.apps.twitterclient.utils.Helper;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -111,7 +112,7 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Helper.toastInternetIssues(getContext());
             }
         };
     }
@@ -134,14 +135,13 @@ public class ProfileFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-//                super.onFailure(statusCode, headers, throwable, errorResponse);
+                Helper.toastInternetIssues(getContext());
             }
         };
     }
 
     private void setProfileUI() {
-//        ivBackground.setImageResource(android.R.color.transparent);
-//        Glide.with(getContext()).load(user.getBackgroundImageUrl()).into(ivBackground);
+        // the background profile is handled by handleProfileBanner in a separate network request
         ivProfile.setImageResource(android.R.color.transparent);
         Glide.with(getContext()).load(user.getProfileImageUrl()).into(ivProfile);
         tvName.setText(user.getName());

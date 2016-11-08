@@ -21,8 +21,6 @@ public class PageMentionsFragment extends Fragment {
     public static Fragment newInstance(int page) {
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE, page);
-        System.out.println(String.valueOf(page));
-
         PageMentionsFragment fragment = new PageMentionsFragment();
         fragment.setArguments(args);
         return fragment;

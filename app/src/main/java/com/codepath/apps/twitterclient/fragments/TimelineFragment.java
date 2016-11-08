@@ -23,10 +23,13 @@ import com.codepath.apps.twitterclient.adapters.TweetsArrayAdapter;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
 import com.codepath.apps.twitterclient.utils.EndlessRecyclerViewScrollListener;
+import com.codepath.apps.twitterclient.utils.Helper;
 import com.codepath.apps.twitterclient.utils.ItemClickSupport;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -59,11 +62,14 @@ public class TimelineFragment extends Fragment {
     private Unbinder unbinder;
     public static final String ARG_PAGE = "ARG_PAGE";
     public static final String USER_ID = "USER_ID";
+    public static final String QUERY = "QUERY";
     private static final int DEFAULT_VALUE = 1;
     private static final int DEFAULT_USER_ID = -1;
+    private static final String DEFAULT_QUERY = "doge";
     private int tabPage;
     private long userId;
     private long previous_max_id;
+    private String query;
 
     public static Fragment newInstance(int page) {
         Bundle args = new Bundle();
@@ -83,6 +89,14 @@ public class TimelineFragment extends Fragment {
         return fragment;
     }
 
+    public static Fragment newInstance(String query) {
+        Bundle args = new Bundle();
+        args.putString(QUERY, query);
+        TimelineFragment fragment = new TimelineFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
 
     @Override
@@ -93,6 +107,7 @@ public class TimelineFragment extends Fragment {
         if (bundle != null) {
             tabPage = bundle.getInt(ARG_PAGE, DEFAULT_VALUE);
             userId = bundle.getLong(USER_ID, DEFAULT_USER_ID);
+            query = bundle.getString(QUERY);
         }
         tweets = new ArrayList<>();
         aTweets = new TweetsArrayAdapter(getActivity(), tweets);
@@ -135,56 +150,104 @@ public class TimelineFragment extends Fragment {
     // send api request
     // fill the recycler view by creating the tweet objects from json
     private void populateTimeline() {
-        if (tabPage == 1) {
+        if (tabPage == 1 && query == null) {
             getHomeTimeline();
-        } else if (tabPage == 2) {
+        } else if (tabPage == 2 && query == null) {
             getMentionsTimeline();
         } else {
-            getHomeTimeline();
+            if (query.length() > 0) {
+              getSearchResults();
+            }
         }
 
+    }
+
+    private void getSearchResults() {
+        client.getSearchResults(getSearchResultHandler(), query);
+    }
+
+    private JsonHttpResponseHandler getSearchResultHandler() {
+        return new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    aTweets.addAll(Tweet.fromJSONArray(response.getJSONArray("statuses")));
+                    client.setMaxID(aTweets.getLastMaxId());
+                    previous_max_id = aTweets.getLastMaxId();
+                    swipeContainer.setRefreshing(false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
+            }
+        };
     }
 
     private void getHomeTimeline() {
+        Helper.toastInternetIssues(getContext());
         if (userId > -1) {
             // pass in request for the user id
-            client.getHomeTimelineUser(new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    aTweets.addAll(Tweet.fromJSONArray(response));
-                    client.setMaxID(aTweets.getLastMaxId());
-                    previous_max_id = aTweets.getLastMaxId();
-                    swipeContainer.setRefreshing(false);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                    // need to handler failures
-//                Log.d("DEBUG", errorResponse.toString());
-                }
-            }, userId);
+            client.getHomeTimelineUser(getHomeTimelineUserHandler(), userId);
         } else {
-            client.getHomeTimeline(new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            client.getHomeTimeline(getHomeTimelineHandler());
+
+        }
+    }
+
+    private JsonHttpResponseHandler getHomeTimelineUserHandler() {
+       return new JsonHttpResponseHandler(){
+           @Override
+           public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+               Helper.toastInternetIssues(getContext());
+               aTweets.addAll(Tweet.fromJSONArray(response));
+               client.setMaxID(aTweets.getLastMaxId());
+               previous_max_id = aTweets.getLastMaxId();
+               swipeContainer.setRefreshing(false);
+           }
+
+           @Override
+           public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+               Helper.toastInternetIssues(getContext());
+               hideProgressBar();
+           }
+       };
+    }
+
+    private JsonHttpResponseHandler getHomeTimelineHandler() {
+        return new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response){
+                try {
                     aTweets.addAll(Tweet.fromJSONArray(response));
                     client.setMaxID(aTweets.getLastMaxId());
                     previous_max_id = aTweets.getLastMaxId();
                     swipeContainer.setRefreshing(false);
+                } catch(Exception e) {
+                    Helper.toastInternetIssues(getContext());
                 }
+            }
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                    // need to handler failures
-//                Log.d("DEBUG", errorResponse.toString());
-                }
-            });
-        }
-
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
+            }
+        };
     }
 
     private void getMentionsTimeline() {
-        client.getMentionsTimeline(new JsonHttpResponseHandler(){
+        Helper.toastInternetIssues(getContext());
+        client.getMentionsTimeline(getMentionsTimelineHandler());
+    }
+
+    private JsonHttpResponseHandler getMentionsTimelineHandler() {
+        return new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 aTweets.addAll(Tweet.fromJSONArray(response));
@@ -195,10 +258,10 @@ public class TimelineFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                // need to handler failures
-//                Log.d("DEBUG", errorResponse.toString());
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
             }
-        });
+        };
     }
 
     private void loadAdditionalPages(int page) {
@@ -208,50 +271,50 @@ public class TimelineFragment extends Fragment {
         } else if (tabPage == 2) {
             getAdditionalMentionsTimeline(page);
         } else {
-            getAdditionalTimeline(page);
+            if (query.length() > 0) {
+                getAdditionalSearchResults();
+            }
         }
+    }
+
+    private void getAdditionalSearchResults() {
+        client.getAdditionalSearchResults(getAdditionalSearchResultsHandler(),query,previous_max_id);
+    }
+
+    private JsonHttpResponseHandler getAdditionalSearchResultsHandler() {
+        return new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                try {
+                    aTweets.addAll(Tweet.fromJSONArray(response.getJSONArray("statuses")));
+                    client.setMaxID(aTweets.getLastMaxId());
+                    previous_max_id = aTweets.getLastMaxId();
+                    hideProgressBar();
+                    swipeContainer.setRefreshing(false);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
+            }
+        };
     }
 
     private void getAdditionalTimeline(int page) {
         if (userId > -1) {
-            client.getAdditionalTimelineUser(new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    aTweets.addAll(Tweet.fromJSONArray(response));
-                    client.setMaxID(aTweets.getLastMaxId());
-                    previous_max_id = aTweets.getLastMaxId();
-                    hideProgressBar();
-                    swipeContainer.setRefreshing(false);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                    // need to handler failures
-//                Log.d("DEBUG", errorResponse.toString());
-                }
-            }, previous_max_id, userId);
+            client.getAdditionalTimelineUser(getAdditionalTimelineUserHandler(), previous_max_id, userId);
         } else {
-            client.getAdditionalTimeline(new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-                    aTweets.addAll(Tweet.fromJSONArray(response));
-                    client.setMaxID(aTweets.getLastMaxId());
-                    previous_max_id = aTweets.getLastMaxId();
-                    hideProgressBar();
-                    swipeContainer.setRefreshing(false);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                    // need to handler failures
-//                Log.d("DEBUG", errorResponse.toString());
-                }
-            }, previous_max_id);
+            client.getAdditionalTimeline(getAdditionalTimelineHandler(), previous_max_id);
         }
     }
 
-    private void getAdditionalMentionsTimeline(int page) {
-        client.getAdditionalMentionsTimeline(new JsonHttpResponseHandler(){
+    private JsonHttpResponseHandler getAdditionalTimelineUserHandler() {
+        return new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
                 aTweets.addAll(Tweet.fromJSONArray(response));
@@ -263,10 +326,52 @@ public class TimelineFragment extends Fragment {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-                // need to handler failures
-//                Log.d("DEBUG", errorResponse.toString());
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
             }
-        }, previous_max_id);
+        };
+    }
+
+    private JsonHttpResponseHandler getAdditionalTimelineHandler() {
+        return new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                aTweets.addAll(Tweet.fromJSONArray(response));
+                client.setMaxID(aTweets.getLastMaxId());
+                previous_max_id = aTweets.getLastMaxId();
+                hideProgressBar();
+                swipeContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
+            }
+        };
+    }
+
+    private void getAdditionalMentionsTimeline(int page) {
+        client.getAdditionalMentionsTimeline(getAdditionalMentionsTimelineHandler(), previous_max_id);
+    }
+
+    private JsonHttpResponseHandler getAdditionalMentionsTimelineHandler() {
+        return new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                aTweets.addAll(Tweet.fromJSONArray(response));
+                client.setMaxID(aTweets.getLastMaxId());
+                previous_max_id = aTweets.getLastMaxId();
+                hideProgressBar();
+                swipeContainer.setRefreshing(false);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+                Helper.toastInternetIssues(getContext());
+                hideProgressBar();
+            }
+        };
     }
 
     private void setRVClicks() {

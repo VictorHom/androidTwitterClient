@@ -18,6 +18,8 @@ import com.codepath.apps.twitterclient.models.User;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import butterknife.BindView;
@@ -94,17 +96,44 @@ public class ProfileActivity extends AppCompatActivity implements ComposeTweetFr
         Intent intent = getIntent();
         user = intent.getParcelableExtra(User.USER);
 
+        String twitterhandle = intent.getStringExtra("TWITTERHANDLE");
+
         setSupportActionBar(menubar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.twitterbird);
 
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(R.id.profileLayout, ProfileFragment.newInstance(user.getScreenName()));
-        ft.add(R.id.userhomeline, TimelineFragment.newInstance(0, user.getUid()));
-        ft.commit();
-
         client = TwitterApplication.getRestClient(); //singleton client
+
+        if (user != null) {
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(R.id.profileLayout, ProfileFragment.newInstance(user.getScreenName()));
+            ft.add(R.id.userhomeline, TimelineFragment.newInstance(0, user.getUid()));
+            ft.commit();
+        } else if (twitterhandle.length() > 0){
+            // need to get information on the user before getting it
+            client.getProfileInformation(new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                    try {
+                        user = User.fromJson(response.getJSONObject(0));
+                        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                        ft.add(R.id.profileLayout, ProfileFragment.newInstance(user.getScreenName()));
+                        ft.add(R.id.userhomeline, TimelineFragment.newInstance(0, user.getUid()));
+                        ft.commit();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
+
+                }
+            }, twitterhandle);
+        }
+
+
+
     }
 
     private void showComposeDialog() {

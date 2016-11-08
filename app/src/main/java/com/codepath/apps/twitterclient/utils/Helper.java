@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.text.format.DateUtils;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -34,7 +35,7 @@ public class Helper {
     }
 
 
-    private Boolean isNetworkAvailable(Context c) {
+    private static Boolean isNetworkAvailable(Context c) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -50,5 +51,18 @@ public class Helper {
         } catch (IOException e)          { e.printStackTrace(); }
         catch (InterruptedException e) { e.printStackTrace(); }
         return false;
+    }
+
+    public static void toastInternetIssues(Context c) {
+        if (!Helper.isOnline()) {
+            Toast.makeText(c, "There is issue with your internet", Toast.LENGTH_LONG);
+        }
+        if (!Helper.isNetworkAvailable(c)){
+            if (!Helper.isOnline()) {
+                Toast.makeText(c, "There is issue with your internet", Toast.LENGTH_LONG);
+            } else {
+                Toast.makeText(c, "There is issue with your internet or with the server. It is unknown at this time.", Toast.LENGTH_LONG);
+            }
+        }
     }
 }
