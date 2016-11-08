@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".TwitterApplication"
@@ -45,6 +46,7 @@
             android:name=".activities.TweetDetailActivity"
             android:label="@string/title_activity_tweet_detail"
             android:theme="@style/AppTheme" />
+        <activity android:name=".activities.ProfileActivity"></activity>
     </application>
 
 </manifest>

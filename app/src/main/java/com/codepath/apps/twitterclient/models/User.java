@@ -10,18 +10,27 @@ import org.json.JSONObject;
  * Created by victorhom on 10/29/16.
  */
 public class User implements Parcelable {
-
+    public final static String USER = "USER";
     // list the attributes
     // deserialize the user json
     private String name;
     private long uid;
+    private int friendsCount;
+    private int followersCount;
+    private String backgroundImageUrl;
+    private String description;
+    private String screenName;
+    private String profileImageUrl;
 
     public String getDescription() {
         return description;
     }
 
-    private String description;
+    public int getFriendsCount() { return friendsCount; }
 
+    public int getFollowersCount() { return followersCount; }
+
+    public String getBackgroundImageUrl() { return backgroundImageUrl; }
 
     public String getName() {
         return name;
@@ -39,9 +48,6 @@ public class User implements Parcelable {
         return profileImageUrl;
     }
 
-    private String screenName;
-    private String profileImageUrl;
-
     //deserialize the user json => User
     public static User fromJson(JSONObject jsonObject) {
         User u = new User();
@@ -56,7 +62,21 @@ public class User implements Parcelable {
             e.printStackTrace();
         }
 
+        // decided to wrap into a different try-catch since I am mainly using this
+        // for the profile fragments; it might be excessive - test that the objects from the request
+        // can fit the same model
+        try {
+            u.friendsCount = jsonObject.getInt("friends_count");
+            u.followersCount = jsonObject.getInt("followers_count");
+            u.backgroundImageUrl = jsonObject.getString("profile_background_image_url_https");
+        }catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return u;
+    }
+
+    public User() {
     }
 
     @Override
@@ -68,21 +88,26 @@ public class User implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.name);
         dest.writeLong(this.uid);
+        dest.writeString(this.description);
+        dest.writeInt(this.friendsCount);
+        dest.writeInt(this.followersCount);
+        dest.writeString(this.backgroundImageUrl);
         dest.writeString(this.screenName);
         dest.writeString(this.profileImageUrl);
-    }
-
-    public User() {
     }
 
     protected User(Parcel in) {
         this.name = in.readString();
         this.uid = in.readLong();
+        this.description = in.readString();
+        this.friendsCount = in.readInt();
+        this.followersCount = in.readInt();
+        this.backgroundImageUrl = in.readString();
         this.screenName = in.readString();
         this.profileImageUrl = in.readString();
     }
 
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+    public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
         public User createFromParcel(Parcel source) {
             return new User(source);

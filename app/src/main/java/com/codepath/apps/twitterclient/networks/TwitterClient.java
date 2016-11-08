@@ -62,18 +62,35 @@ public class TwitterClient extends OAuthBaseClient {
 //	count = 2
 //	since_id=1
 	public void getHomeTimeline(AsyncHttpResponseHandler handler) {
-		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
-//		params.put("since_id", 1);
 		client.get(apiUrl, params, handler);
 	}
 
-	public void getAdditionalTimeline(AsyncHttpResponseHandler handler, int offset) {
-		String apiUrl = getApiUrl("statuses/user_timeline.json");
+	public void getAdditionalTimeline(AsyncHttpResponseHandler handler, long last_id) {
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
-		params.put("max_id", max_id+1);
+		params.put("max_id", last_id - 1);
+		client.get(apiUrl, params, handler);
+	}
+
+	// when this is called, the max_id should be reset;
+	public void getHomeTimelineUser(AsyncHttpResponseHandler handler, Long twitterId) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		RequestParams params = new RequestParams();
+		params.put("user_id", twitterId);
+		params.put("count", 25);
+		client.get(apiUrl, params, handler);
+	}
+
+	public void getAdditionalTimelineUser(AsyncHttpResponseHandler handler, long last_id, Long twitterId) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+		RequestParams params = new RequestParams();
+		params.put("user_id", twitterId);
+		params.put("count", 25);
+		params.put("max_id", last_id - 1);
 		client.get(apiUrl, params, handler);
 	}
 
@@ -95,4 +112,44 @@ public class TwitterClient extends OAuthBaseClient {
 		client.post(apiUrl, params, handler);
 
 	}
+
+	//https://api.twitter.com/1.1/statuses/mentions_timeline.json
+	public void getMentionsTimeline(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+		RequestParams params = new RequestParams();
+		params.put("count", 25);
+		client.get(apiUrl, params, handler);
+	}
+
+	public void getAdditionalMentionsTimeline(AsyncHttpResponseHandler handler, long last_id) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+		RequestParams params = new RequestParams();
+		params.put("count", 25);
+		params.put("max_id", last_id - 1);
+		client.get(apiUrl, params, handler);
+	}
+
+	// GET userprofile
+	// https://api.twitter.com/1.1/users/lookup.json?screen_name=twitterapi,twitter
+	// array of objects
+	public void getProfileInformation(AsyncHttpResponseHandler handler, String twitterHandle) {
+		String apiUrl = getApiUrl("users/lookup.json");
+		RequestParams params = new RequestParams();
+		params.put("screen_name", twitterHandle);
+		client.get(apiUrl, params, handler);
+	}
+
+	public void getVerifyCredentials(AsyncHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("account/verify_credentials.json");
+		client.get(apiUrl, handler);
+	}
+
+	public void getProfileBanner(AsyncHttpResponseHandler handler, String twitterHandle) {
+		String apiUrl = getApiUrl("users/profile_banner.json");
+		RequestParams params = new RequestParams();
+		params.put("screen_name", twitterHandle);
+		client.get(apiUrl, params, handler);
+	}
+
+
 }

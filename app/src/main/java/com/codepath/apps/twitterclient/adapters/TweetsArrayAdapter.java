@@ -57,10 +57,13 @@ public class TweetsArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void addAll(List<Tweet> tweets) {
-        mTweets.addAll(tweets);
-        Tweet lastTweet = tweets.get(tweets.size() - 1);
-        last_max_id = lastTweet.getUid();
-        notifyDataSetChanged();
+        if (tweets.size() > 0) {
+            mTweets.addAll(tweets);
+            Tweet lastTweet = tweets.get(tweets.size() - 1);
+            last_max_id = lastTweet.getUid();
+            notifyDataSetChanged();
+        }
+
     }
 
     public void addStandalonePost(String message) {

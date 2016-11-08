@@ -1,6 +1,7 @@
 package com.codepath.apps.twitterclient.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -8,10 +9,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.codepath.apps.twitterclient.R;
+import com.codepath.apps.twitterclient.activities.ProfileActivity;
 import com.codepath.apps.twitterclient.models.Tweet;
+import com.codepath.apps.twitterclient.models.User;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * Created by victorhom on 10/31/16.
@@ -43,6 +47,16 @@ public class ViewHolder1 extends RecyclerView.ViewHolder{
             // show just now!
             tvDate.setText(data.getCreatedAt());
         }
+    }
+
+    @OnClick(R.id.ivProfile)
+    public void openProfile(View view) {
+        // to open profile
+        //Toast.makeText(c, t.getUser().getName(), Toast.LENGTH_LONG).show();
+//        User user = User.fromJson(response);
+        Intent intent = new Intent(c, ProfileActivity.class);
+        intent.putExtra(User.USER, t.getUser());
+        c.startActivity(intent);
     }
 
 }

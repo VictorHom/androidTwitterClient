@@ -1,23 +1,18 @@
 package com.codepath.apps.twitterclient.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.TwitterApplication;
-import com.codepath.apps.twitterclient.adapters.TabsFragmentPagerAdapter;
 import com.codepath.apps.twitterclient.fragments.ComposeTweetFragment;
+import com.codepath.apps.twitterclient.fragments.ProfileFragment;
 import com.codepath.apps.twitterclient.fragments.TimelineFragment;
 import com.codepath.apps.twitterclient.models.User;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
@@ -29,14 +24,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
-public class TimelineActivity extends AppCompatActivity implements ComposeTweetFragment.OnDataPass{
+public class ProfileActivity extends AppCompatActivity implements ComposeTweetFragment.OnDataPass{
 
+    User user;
     private TwitterClient client;
-    @BindView(R.id.include) Toolbar menubar;
-    TabLayout tabLayout;
-    ViewPager viewPager;
-    TabsFragmentPagerAdapter tFPA;
-
+    @BindView(R.id.include)
+    Toolbar menubar;
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -60,18 +53,21 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
             showComposeDialog();
             return true;
         } else if(id == R.id.menu_profile) {
+            // go to your home profile
             client.getVerifyCredentials(HandleVerification());
+            // unless it's someone elses
+//            Toast.makeText(this, "You're already on a profile",Toast.LENGTH_LONG).show();
             return true;
-        }else if (id == R.id.birdicon) {
+        } else if (id == R.id.birdicon) {
             Intent intent = new Intent(getApplication(), TimelineActivity.class);
+            intent.putExtra(User.USER, user);
             startActivity(intent);
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
-    // there is probably information on the logged in user somewhere
-    // but I didn't see it, so making a network request for it :(
+
     private JsonHttpResponseHandler HandleVerification() {
         return new JsonHttpResponseHandler() {
             @Override
@@ -92,28 +88,23 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline);
+        setContentView(R.layout.activity_profile);
         ButterKnife.bind(this);
+
+        Intent intent = getIntent();
+        user = intent.getParcelableExtra(User.USER);
+
         setSupportActionBar(menubar);
         getSupportActionBar().setTitle("");
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.twitterbird);
 
-        // Get the ViewPager and set it's PagerAdapter so that it can display items
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        tFPA = new TabsFragmentPagerAdapter(getSupportFragmentManager(),
-                TimelineActivity.this);
-        viewPager.setAdapter(tFPA);
 
-        // Give the TabLayout the ViewPager
-        tabLayout = (TabLayout) findViewById(R.id.sliding_tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        client = TwitterApplication.getRestClient();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.profileLayout, ProfileFragment.newInstance(user.getScreenName()));
+        ft.add(R.id.userhomeline, TimelineFragment.newInstance(0, user.getUid()));
+        ft.commit();
 
-    }
-
-    @Override
-    public View onCreateView(String name, Context context, AttributeSet attrs) {
-        return super.onCreateView(name, context, attrs);
+        client = TwitterApplication.getRestClient(); //singleton client
     }
 
     private void showComposeDialog() {
@@ -123,21 +114,9 @@ public class TimelineActivity extends AppCompatActivity implements ComposeTweetF
         fa.setArguments(bundle);
         fa.show(getSupportFragmentManager(),"compose");
     }
-    // TODO: get to update the recycler view
-    // TODO: also scroll to top
+
     @Override
     public void getUpdate(boolean compose, String message) {
-//        aTweets.clear();
-//        populateTimeline();
-        // make the date be 'just now'
-        // take the profile picture from the first tweet
-        // not pictures
-//        aTweets.addStandalonePost(message);
-//        rvTweets.getLayoutManager().scrollToPosition(0);
-        TabLayout.Tab tab = tabLayout.getTabAt(0);
-        tab.select();
-        TimelineFragment f = (TimelineFragment) tFPA.getRegisteredFragment(0);
-        f.addTweet(message); //adds to adapter and scrolls to top
 
     }
 }
