@@ -155,9 +155,12 @@ public class TimelineFragment extends Fragment {
         } else if (tabPage == 2 && query == null) {
             getMentionsTimeline();
         } else {
-            if (query.length() > 0) {
+            if (query != null && query.length() > 0) {
               getSearchResults();
+            } else {
+                getHomeTimeline();
             }
+
         }
 
     }
@@ -271,9 +274,12 @@ public class TimelineFragment extends Fragment {
         } else if (tabPage == 2) {
             getAdditionalMentionsTimeline(page);
         } else {
-            if (query.length() > 0) {
+            if (query != null && query.length() > 0) {
                 getAdditionalSearchResults();
+            } else {
+                getAdditionalTimeline(page);
             }
+
         }
     }
 
