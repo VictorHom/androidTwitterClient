@@ -92,6 +92,7 @@ public class TweetDetailActivity extends AppCompatActivity {
         retweetNumber.setText(String.valueOf(object.getRetweetNumber()));
         likeNumber.setText(String.valueOf(object.getLikes()));
         description.setText(object.getUser().getDescription());
+        etReplyBox.setText("@" + object.getUser().getScreenName());
         Glide.with(getApplicationContext()).load(object.getUser().getProfileImageUrl()).into(profilePic);
 
     }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.TwitterApplication;
 import com.codepath.apps.twitterclient.networks.TwitterClient;
+import com.codepath.apps.twitterclient.utils.Helper;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -145,21 +146,25 @@ public class ComposeTweetFragment extends DialogFragment {
     public void submitTweet() {
         String currentTweet = etTweetBox.getText().toString();
         if (currentTweet.length() > 0) {
-            client.submitTweet(new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    closeFragment();
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    super.onFailure(statusCode, headers, throwable, errorResponse);
-                }
-            },currentTweet);
+            client.submitTweet(submitTweetHandler(), currentTweet);
         } else {
             Toast.makeText(getActivity(), "The tweet is empty. Please type something", Toast.LENGTH_LONG).show();
         }
 
+    }
+
+    private JsonHttpResponseHandler submitTweetHandler() {
+        return new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                closeFragment();
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Helper.toastInternetIssues(getContext());
+            }
+        };
     }
 
     private void closeFragment() {

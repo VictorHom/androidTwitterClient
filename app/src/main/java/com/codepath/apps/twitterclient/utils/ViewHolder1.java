@@ -2,6 +2,7 @@ package com.codepath.apps.twitterclient.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -12,6 +13,8 @@ import com.codepath.apps.twitterclient.R;
 import com.codepath.apps.twitterclient.activities.ProfileActivity;
 import com.codepath.apps.twitterclient.models.Tweet;
 import com.codepath.apps.twitterclient.models.User;
+
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +42,16 @@ public class ViewHolder1 extends RecyclerView.ViewHolder{
         c = m;
         tvProfileName.setText(data.getUser().getScreenName());
         tvTweetBody.setText(data.getBody());
+        new PatternEditableBuilder().
+                addPattern(Pattern.compile("\\@(\\w+)"), ContextCompat.getColor(c, R.color.twitterblue),
+                        new PatternEditableBuilder.SpannableClickedListener() {
+                            @Override
+                            public void onSpanClicked(String text) {
+                                Intent intent = new Intent(c, ProfileActivity.class);
+                                intent.putExtra("TWITTERHANDLE", text.replace("@",""));
+                                c.startActivity(intent);
+                            }
+                        }).into(tvTweetBody);
         ivProfile.setImageResource(android.R.color.transparent);
         Glide.with(m).load(data.getUser().getProfileImageUrl()).into(ivProfile);
         if (!data.getCreatedAt().equals(Tweet.NOW)) {
